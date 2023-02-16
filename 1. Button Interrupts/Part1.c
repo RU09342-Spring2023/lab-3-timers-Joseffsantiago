@@ -65,7 +65,7 @@ __interrupt void Port_2(void)
     {
         LED_Color = 0;
         P2IES &= ~BIT3;
-        P6OUT |= BIT6;
+        P1OUT &= ~BIT0;
 
         // @TODO Add code to change which edge the interrupt should be looking for next
     }
