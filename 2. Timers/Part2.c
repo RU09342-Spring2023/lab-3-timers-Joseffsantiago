@@ -14,17 +14,22 @@ void timerInit();
 
 void main(){
 
-    WDTCTL = WDTPW | WDTHOLD;               // Stop watchdog timer
+        WDTCTL = WDTPW | WDTHOLD;                 // Stop WDT
 
-    gpioInit();
-    timerInit();
+       // Configure GPIO
+       P1DIR |= BIT0;                            // Set Pin as output
+       P1OUT |= BIT0;
 
-    // Disable the GPIO power-on default high-impedance mode
-    // to activate previously configured port settings
-    PM5CTL0 &= ~LOCKLPM5;
+       // Disable the GPIO power-on default high-impedance mode to activate
+       // previously configured port settings
+       PM5CTL0 &= ~LOCKLPM5;
 
-    __bis_SR_register(LPM3_bits | GIE);
+       // Timer1_B3 setup
+       TB1CCTL0 = CCIE;                          // TBCCR0 interrupt enabled
+       TB1CCR0 = 50000;
+       TB1CTL = TBSSEL_1 | MC_2;                 // ACLK, continuous mode
 
+       __bis_SR_register(LPM3_bits | GIE);       // Enter LPM3 w/ interrupt
 }
 
 
