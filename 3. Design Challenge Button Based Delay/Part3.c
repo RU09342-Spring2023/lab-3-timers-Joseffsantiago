@@ -18,7 +18,7 @@ void main(){
 
     gpioInit();
     timerInit();
-    int t=0;
+    int t=4;
 
     // Disable the GPIO power-on default high-impedance mode
     // to activate previously configured port settings
@@ -28,7 +28,7 @@ void main(){
        if(P2IFG & ~BIT3) t++;   //if button, increment i; uses system clock as built into the loop
        else t=t;
        TB1CCR0 = t;
-       if(P4IFG & ~BIT1) t=0;
+       if(P4IFG & ~BIT1) t=4;
     }
 }
 
