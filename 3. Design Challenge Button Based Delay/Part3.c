@@ -32,7 +32,6 @@ void main(){
 }
 
 void timerInit(){
-
         TB1CTL = TBSSEL_1 | MC_2 | TBCLR;           // ACLK, continuous mode, clear TAR
                                                     // Set CCR0 to control the LED blinking frequency
         TB1CCR0 = 50000;                            // Set CCR0 to toggle every 1/2 second; default value
@@ -58,4 +57,11 @@ void gpioInit(){
                 P4REN |= BIT1;                          // P4.1 pull-up register enable
                 P4IES &= ~BIT1;                         // P4.1 Low --> High edge
                 P4IE  |= BIT1;                          // P4.1 interrupt enabled
+}
+
+#pragma vector = TIMER1_B0_VECTOR
+__interrupt void Timer1_B0_ISR(void)
+{
+    P1OUT ^= BIT0;                      //toggles LED
+    TB1CCR0 += t;                       //offsets CCR0 by t
 }
