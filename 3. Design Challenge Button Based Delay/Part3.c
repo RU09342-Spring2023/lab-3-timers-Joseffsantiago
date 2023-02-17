@@ -35,7 +35,7 @@ void main(){
 void timerInit(){
         TB1CTL = TBSSEL_1 | MC_2 | TBCLR;           // ACLK, continuous mode, clear TAR
                                                     // Set CCR0 to control the LED blinking frequency
-        TB1CCR0 = 50000;                            // Set CCR0 to toggle every 1/2 second; default value
+        TB1CCR0 = 4;                            // Set CCR0 to toggle every 1/2 second; default value
         TB1CCTL0 |= CCIE;                           //Enable interrupt
 }
 
