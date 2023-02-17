@@ -28,6 +28,7 @@ void main(){
        if(P2IFG & ~BIT3) t++;   //if button, increment i; uses system clock as built into the loop
        else t=t;
        TB1CCR0 = t;
+       if(P4IFG & ~BIT1) t=0;
     }
 }
 
