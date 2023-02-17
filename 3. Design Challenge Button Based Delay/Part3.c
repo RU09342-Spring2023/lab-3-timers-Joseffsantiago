@@ -16,7 +16,7 @@ void main(){
 
     WDTCTL = WDTPW | WDTHOLD;               // Stop watchdog timer
 
-    gpioInit();
+    gpioInit();                             //calls initialization functions and sets a variable to track the button duration and frequency
     timerInit();
     int t=4;
 
@@ -25,26 +25,26 @@ void main(){
     PM5CTL0 &= ~LOCKLPM5;
 
     while(1){
-       if(P2IFG & ~BIT3) t++;   //if button, increment i; uses system clock as built into the loop
-       else t=t;
-       TB1CCR0 = t;
-       if(P4IFG & ~BIT1) t=4;
+       if(P2IFG & ~BIT3) t++;   //if 4.1, increment i; uses system clock as built into the loop
+       else t=t;                //if 2.3, is not pressed, t holds its value
+       TB1CCR0 = t;             //sets the clock frequency equal to the button press duration
+       if(P4IFG & ~BIT1) t=4;   //button 4.1 acts as a reset and resets t down to its initial value
     }
 }
 
 void timerInit(){
-        TB1CTL = TBSSEL_1 | MC_2 | TBCLR;           // ACLK, continuous mode, clear TAR
+        TB1CTL = TBSSEL_1 | MC_2 | TBCLR;           // ACLK, continuous mode, clear TAR; copy and pasted from previous part still dont know how it works
                                                     // Set CCR0 to control the LED blinking frequency
-        TB1CCR0 = 4;                            // Set CCR0 to toggle every 1/2 second; default value
+        TB1CCR0 = 4;                                // Set CCR0 to toggle every at 4 of something; default value
         TB1CCTL0 |= CCIE;                           //Enable interrupt
 }
 
 void gpioInit(){
-    // Configure RED LED on P1.0 as Output
+        // Configure RED LED on P1.0 as Output
                 P1OUT &= ~BIT0;                         // Clear P1.0 output latch for a defined power-on state
                 P1DIR |= BIT0;                          // Set P1.0 to output direction
 
-                // Configure Green LED on P6.6 as Output
+        // Configure Green LED on P6.6 as Output
                 P6OUT &= ~BIT6;                         // Clear P6.6 output latch for a defined power-on state
                 P6DIR |= BIT6;                          // Set P6.6 to output direction
 
@@ -60,7 +60,7 @@ void gpioInit(){
                 P4IE  |= BIT1;                          // P4.1 interrupt enabled
 }
 
-#pragma vector = TIMER1_B0_VECTOR
+#pragma vector = TIMER1_B0_VECTOR                       //some interrupt stuff; copy and pasted from previous part, still not sure how it works
 __interrupt void Timer1_B0_ISR(void)
 {
     P1OUT ^= BIT0;                      //toggles LED
