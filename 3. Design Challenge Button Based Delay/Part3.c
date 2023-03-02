@@ -8,7 +8,7 @@
  */
 
 #include <msp430.h>
-unsigned int t = 50000;
+unsigned int t = 8192;
 void gpioInit();
 void timerInit();
 
@@ -18,25 +18,23 @@ void main(){
 
     gpioInit();                             //calls initialization functions and sets a variable to track the button duration and frequency
     timerInit();
-    int t=4;
 
     // Disable the GPIO power-on default high-impedance mode
     // to activate previously configured port settings
     PM5CTL0 &= ~LOCKLPM5;
-
-    while(1){
-       if(P2IFG & ~BIT3) t++;   //if 4.1, increment i; uses system clock as built into the loop
-       else t=t;                //if 2.3, is not pressed, t holds its value
-       TB1CCR0 = t;             //sets the clock frequency equal to the button press duration
-       if(P4IFG & ~BIT1) t=4;   //button 4.1 acts as a reset and resets t down to its initial value
-    }
+    P2IFG &=~ BIT3;
+    P4IFG &=~ BIT1;
+    __bis_SR_register(GIE);                 // Enter LPM3 w/interrupt
 }
 
 void timerInit(){
-        TB1CTL = TBSSEL_1 | MC_2 | TBCLR;           // ACLK, continuous mode, clear TAR; copy and pasted from previous part still dont know how it works
-                                                    // Set CCR0 to control the LED blinking frequency
-        TB1CCR0 = 4;                                // Set CCR0 to toggle every at 4 of something; default value
-        TB1CCTL0 |= CCIE;                           //Enable interrupt
+        TB1CCTL0 = CCIE;                          // TBCCR0 interrupt enabled
+        TB1CCR0 = t;                              // triggers on t
+        TB1CTL = TBSSEL_1 | MC_2;                 // ACLK, continuous mode
+
+        TB1CCTL1 = CCIE;
+        TB1CCR1 = 8192;                          // Initialized with a random value
+        TB1CCR1 = TBSSEL_1 | ID_3 | MC_2;        // ACLK divided by 8
 }
 
 void gpioInit(){
